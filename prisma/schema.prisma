@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Lesson {
+  id         Int      @id @default(autoincrement())
+  slug       String   @unique
+  title      String
+  description String?
+  vocab      Json
+  exercises  Json
+  Progress   Progress[]
+  createdAt  DateTime @default(now())
+}
+
+model Progress {
+  id          Int      @id @default(autoincrement())
+  lessonId    Int
+  completed   Boolean  @default(false)
+  xpEarned    Int      @default(0)
+  completedAt DateTime?
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  @@index([lessonId])
+}

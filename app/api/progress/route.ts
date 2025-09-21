@@ -1,47 +1,23 @@
-import { type NextRequest, NextResponse } from "next/server"
-
-// Mock progress data - in a real app, this would be stored in a database per user
-const mockProgress = {
-  completedLessons: [1],
-  totalXP: 1250,
-  streak: 7,
-}
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
-  try {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 300))
-
-    return NextResponse.json(mockProgress)
-  } catch (error) {
-    console.error("Error fetching progress:", error)
-    return NextResponse.json({ error: "Failed to fetch progress" }, { status: 500 })
-  }
+  const progress = await prisma.progress.findMany({ orderBy: { completedAt: 'desc' } });
+  return NextResponse.json(progress);
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const { lessonId } = await request.json()
+export async function POST(request: Request) {
+  const body = await request.json();
+  const { lessonId, xp } = body;
+  if (!lessonId) return NextResponse.json({ error: "lessonId required" }, { status: 400 });
 
-    if (!lessonId || typeof lessonId !== "number") {
-      return NextResponse.json({ error: "Invalid lesson ID" }, { status: 400 })
+  const p = await prisma.progress.create({
+    data: {
+      lessonId,
+      completed: true,
+      xpEarned: xp ?? 0,
+      completedAt: new Date()
     }
-
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    // Add lesson to completed list if not already completed
-    if (!mockProgress.completedLessons.includes(lessonId)) {
-      mockProgress.completedLessons.push(lessonId)
-      mockProgress.totalXP += 50 // Base XP for completing a lesson
-
-      // Update streak (simplified logic)
-      mockProgress.streak += 1
-    }
-
-    return NextResponse.json({ success: true, progress: mockProgress })
-  } catch (error) {
-    console.error("Error updating progress:", error)
-    return NextResponse.json({ error: "Failed to update progress" }, { status: 500 })
-  }
+  });
+  return NextResponse.json(p);
 }

@@ -1,0 +1,34 @@
+[
+  {
+    "slug": "basics-1",
+    "title": "Basics 1",
+    "description": "Greetings and simple phrases",
+    "vocab": [
+      { "fr": "bonjour", "en": "hello" },
+      { "fr": "merci", "en": "thank you" },
+      { "fr": "au revoir", "en": "goodbye" }
+    ],
+    "exercises": [
+      {
+        "type": "mcq",
+        "question": "What is 'thank you' in French?",
+        "options": ["bonjour", "merci", "s'il vous plaît"],
+        "answer": "merci",
+        "xp": 10
+      },
+      {
+        "type": "translate",
+        "question": "Translate to French: 'goodbye'",
+        "answer": "au revoir",
+        "xp": 10
+      },
+      {
+        "type": "listening",
+        "question": "Listen and type what you hear",
+        "audio": "bonjour",
+        "answer": "bonjour",
+        "xp": 15
+      }
+    ]
+  }
+]
