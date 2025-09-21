@@ -1,18 +1,29 @@
 [
   {
     "slug": "basics-1",
-    "title": "Basics 1",
-    "description": "Greetings and simple phrases",
+    "title": "French Basics 1",
+    "description": "Learn essential greetings and polite expressions",
     "vocab": [
-      { "fr": "bonjour", "en": "hello" },
-      { "fr": "merci", "en": "thank you" },
-      { "fr": "au revoir", "en": "goodbye" }
+      { "fr": "bonjour", "en": "hello", "pronunciation": "bon-ZHOOR" },
+      { "fr": "bonsoir", "en": "good evening", "pronunciation": "bon-SWAHR" },
+      { "fr": "merci", "en": "thank you", "pronunciation": "mer-SEE" },
+      {
+        "fr": "s'il vous plaît",
+        "en": "please",
+        "pronunciation": "seel voo PLAY"
+      },
+      { "fr": "au revoir", "en": "goodbye", "pronunciation": "oh ruh-VWAHR" },
+      {
+        "fr": "excusez-moi",
+        "en": "excuse me",
+        "pronunciation": "ek-skew-zay MWAH"
+      }
     ],
     "exercises": [
       {
         "type": "mcq",
         "question": "What is 'thank you' in French?",
-        "options": ["bonjour", "merci", "s'il vous plaît"],
+        "options": ["bonjour", "merci", "s'il vous plaît", "au revoir"],
         "answer": "merci",
         "xp": 10
       },
@@ -27,6 +38,89 @@
         "question": "Listen and type what you hear",
         "audio": "bonjour",
         "answer": "bonjour",
+        "xp": 15
+      },
+      {
+        "type": "mcq",
+        "question": "How do you say 'please' in French?",
+        "options": ["merci", "bonjour", "s'il vous plaît", "excusez-moi"],
+        "answer": "s'il vous plaît",
+        "xp": 10
+      },
+      {
+        "type": "translate",
+        "question": "Translate to French: 'excuse me'",
+        "answer": "excusez-moi",
+        "xp": 10
+      }
+    ]
+  },
+  {
+    "slug": "basics-2",
+    "title": "French Basics 2",
+    "description": "Numbers and basic questions",
+    "vocab": [
+      { "fr": "un", "en": "one", "pronunciation": "uhn" },
+      { "fr": "deux", "en": "two", "pronunciation": "duh" },
+      { "fr": "trois", "en": "three", "pronunciation": "twah" },
+      { "fr": "comment", "en": "how", "pronunciation": "koh-mahn" },
+      { "fr": "où", "en": "where", "pronunciation": "oo" },
+      { "fr": "quand", "en": "when", "pronunciation": "kahn" }
+    ],
+    "exercises": [
+      {
+        "type": "mcq",
+        "question": "What is 'three' in French?",
+        "options": ["un", "deux", "trois", "quatre"],
+        "answer": "trois",
+        "xp": 10
+      },
+      {
+        "type": "translate",
+        "question": "Translate to French: 'where'",
+        "answer": "où",
+        "xp": 10
+      },
+      {
+        "type": "listening",
+        "question": "Listen and type what you hear",
+        "audio": "comment",
+        "answer": "comment",
+        "xp": 15
+      }
+    ]
+  },
+  {
+    "slug": "family",
+    "title": "Family Members",
+    "description": "Learn to talk about your family",
+    "vocab": [
+      { "fr": "famille", "en": "family", "pronunciation": "fah-MEEL" },
+      { "fr": "mère", "en": "mother", "pronunciation": "mehr" },
+      { "fr": "père", "en": "father", "pronunciation": "pehr" },
+      { "fr": "frère", "en": "brother", "pronunciation": "frehr" },
+      { "fr": "sœur", "en": "sister", "pronunciation": "suhr" },
+      { "fr": "enfant", "en": "child", "pronunciation": "ahn-fahn" }
+    ],
+    "exercises": [
+      {
+        "type": "mcq",
+        "question": "What is 'mother' in French?",
+        "options": ["père", "mère", "frère", "sœur"],
+        "answer": "mère",
+        "xp": 10
+      },
+      {
+        "type": "translate",
+        "question": "Translate to French: 'family'",
+        "answer": "famille",
+        "xp": 10
+      },
+      {
+        "type": "listening",
+        "question": "Listen and type what you hear",
+        "audio": "frère",
+        "answer": "frère",
         "xp": 15
       }
     ]

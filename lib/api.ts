@@ -40,12 +40,23 @@ export async function fetchLessons(): Promise<Lesson[]> {
     })
 
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Lessons API error (${response.status}):`, errorText)
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    return await response.json()
+    const data = await response.json()
+
+    // Validate the response data structure
+    if (!Array.isArray(data)) {
+      console.error("Invalid lessons data format:", data)
+      return []
+    }
+
+    return data
   } catch (error) {
     console.error("Error fetching lessons:", error)
+    // Return empty array as fallback to prevent app crashes
     return []
   }
 }
@@ -58,33 +69,45 @@ export async function fetchProgress(): Promise<Progress> {
     })
 
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Progress API error (${response.status}):`, errorText)
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    return await response.json()
+    const data = await response.json()
+
+    // Validate and provide defaults for progress data
+    return {
+      completedLessons: Array.isArray(data.completedLessons) ? data.completedLessons : [],
+      totalXP: typeof data.totalXP === "number" ? data.totalXP : 0,
+      streak: typeof data.streak === "number" ? data.streak : 0,
+    }
   } catch (error) {
     console.error("Error fetching progress:", error)
+    // Return default progress to prevent app crashes
     return { completedLessons: [], totalXP: 0, streak: 0 }
   }
 }
 
 // Mark lesson as completed
-export async function markLessonCompleted(lessonId: number): Promise<boolean> {
+export async function markLessonCompleted(lessonId: number, xpEarned = 10): Promise<boolean> {
   try {
     const response = await fetch("/api/progress", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ lessonId }),
+      body: JSON.stringify({ lessonId, xp: xpEarned }),
     })
 
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Progress POST error (${response.status}):`, errorText)
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
     const result = await response.json()
-    return result.success
+    return result.success === true
   } catch (error) {
     console.error("Error marking lesson as completed:", error)
     return false
