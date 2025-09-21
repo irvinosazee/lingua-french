@@ -19,6 +19,7 @@ export default function LessonDetailPage() {
   const [progress, setProgress] = useState<Progress>({ completedLessons: [], totalXP: 0, streak: 0 })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isPlayingAll, setIsPlayingAll] = useState(false)
 
   useEffect(() => {
     async function loadLessonData() {
@@ -158,15 +159,30 @@ export default function LessonDetailPage() {
               <Button
                 variant="outline"
                 size="sm"
+                disabled={isPlayingAll}
                 onClick={() => {
                   if (lesson.vocabulary && lesson.vocabulary.length > 0) {
-                    const allWords = lesson.vocabulary.map((item) => item.french).join(", ")
-                    speakText(allWords)
+                    setIsPlayingAll(true)
+                    // Handle both field naming conventions and filter out empty values
+                    const allWords = lesson.vocabulary
+                      .map((item) => item.french || (item as any).fr)
+                      .filter(word => word && word.trim() !== "")
+                      .join(", ")
+
+                    if (allWords) {
+                      speakText(allWords)
+                      // Reset the playing state after estimated time
+                      setTimeout(() => setIsPlayingAll(false), allWords.length * 200 + 2000)
+                    } else {
+                      console.error('No valid French words found in vocabulary')
+                      setIsPlayingAll(false)
+                    }
                   }
                 }}
+                className={isPlayingAll ? 'bg-blue-100' : ''}
               >
-                <Play className="h-4 w-4 mr-2" />
-                Play All
+                <Play className={`h-4 w-4 mr-2 ${isPlayingAll ? 'text-blue-800' : ''}`} />
+                {isPlayingAll ? 'Playing...' : 'Play All'}
               </Button>
             </div>
           </CardHeader>

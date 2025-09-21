@@ -44,7 +44,16 @@ export default function ExercisesPage() {
           return
         }
 
-        setLesson(currentLesson)
+        // Add unique IDs to exercises based on their index
+        const exercisesWithIds = currentLesson.exercises.map((exercise, index) => ({
+          ...exercise,
+          id: exercise.id || index,
+        }))
+
+        setLesson({
+          ...currentLesson,
+          exercises: exercisesWithIds
+        })
       } catch (err) {
         setError("Failed to load lesson")
         console.error("Error loading lesson:", err)
@@ -66,13 +75,23 @@ export default function ExercisesPage() {
   const handleAnswerSubmit = (exerciseId: number, answer: string) => {
     if (!currentExercise) return
 
-    const isCorrect = answer.toLowerCase().trim() === currentExercise.correctAnswer.toLowerCase().trim()
-    const xpEarned = isCorrect ? currentExercise.xpReward || 10 : 0
+    // Handle both 'correctAnswer' and 'answer' field names for compatibility
+    const correctAnswer = currentExercise.correctAnswer || (currentExercise as any).answer
+    if (!correctAnswer) {
+      console.error('No correct answer found for exercise:', currentExercise)
+      return
+    }
 
-    setAnswers((prev) => ({ ...prev, [exerciseId]: answer }))
+    const isCorrect = answer.toLowerCase().trim() === correctAnswer.toLowerCase().trim()
+    const xpEarned = isCorrect ? currentExercise.xpReward || (currentExercise as any).xp || 10 : 0
+
+    // Use the current exercise index as the key instead of exerciseId to avoid conflicts
+    const exerciseKey = currentExerciseIndex
+
+    setAnswers((prev) => ({ ...prev, [exerciseKey]: answer }))
     setFeedback((prev) => ({
       ...prev,
-      [exerciseId]: { correct: isCorrect, xp: xpEarned },
+      [exerciseKey]: { correct: isCorrect, xp: xpEarned },
     }))
   }
 
@@ -194,12 +213,12 @@ export default function ExercisesPage() {
             <ExerciseComponent
               exercise={currentExercise}
               onAnswerSubmit={handleAnswerSubmit}
-              feedback={feedback[currentExercise.id]}
-              userAnswer={answers[currentExercise.id]}
+              feedback={feedback[currentExerciseIndex]}
+              userAnswer={answers[currentExerciseIndex]}
             />
 
             {/* Navigation */}
-            {feedback[currentExercise.id] && (
+            {feedback[currentExerciseIndex] && (
               <div className="mt-6 flex justify-between items-center">
                 <div className="text-sm text-gray-600">
                   {correctAnswers} of {completedExercises} correct

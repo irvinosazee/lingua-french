@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Navbar } from "@/components/navbar"
 import { ProgressTracker } from "@/components/progress-tracker"
+import { AudioTest } from "@/components/audio-test"
 import { fetchProgress, fetchLessons, getNextLessonId, type Progress as ProgressType } from "@/lib/api"
 
 export default function Dashboard() {
@@ -115,6 +116,9 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Audio Test Component - Remove this after testing */}
+        <AudioTest />
       </div>
     </div>
   )

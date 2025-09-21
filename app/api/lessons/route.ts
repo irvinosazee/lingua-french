@@ -80,8 +80,24 @@ export async function GET() {
       id: lesson.id,
       title: lesson.title,
       description: lesson.description,
-      vocabulary: Array.isArray(lesson.vocab) ? lesson.vocab : [],
-      exercises: Array.isArray(lesson.exercises) ? lesson.exercises : [],
+      vocabulary: Array.isArray(lesson.vocab)
+        ? lesson.vocab.map((item: any, index: number) => ({
+          id: item.id || index,
+          french: item.french || item.fr,
+          english: item.english || item.en,
+          pronunciation: item.pronunciation
+        }))
+        : [],
+      exercises: Array.isArray(lesson.exercises)
+        ? lesson.exercises.map((exercise: any, index: number) => ({
+          ...exercise,
+          id: exercise.id || index, // Ensure each exercise has a unique ID
+          // Ensure consistent field naming - transform 'answer' to 'correctAnswer'
+          correctAnswer: exercise.correctAnswer || exercise.answer,
+          // Ensure consistent field naming - transform 'xp' to 'xpReward'  
+          xpReward: exercise.xpReward || exercise.xp,
+        }))
+        : [],
     }))
 
     return NextResponse.json(transformedLessons)

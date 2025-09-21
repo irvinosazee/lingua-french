@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -19,6 +19,15 @@ export function ExerciseComponent({ exercise, onAnswerSubmit, feedback, userAnsw
   const [selectedAnswer, setSelectedAnswer] = useState<string>("")
   const [inputAnswer, setInputAnswer] = useState<string>("")
 
+  // Reset local state when exercise changes
+  useEffect(() => {
+    setSelectedAnswer("")
+    setInputAnswer("")
+  }, [exercise.id])
+
+  // Handle both 'correctAnswer' and 'answer' field names for compatibility
+  const correctAnswer = exercise.correctAnswer || (exercise as any).answer || ""
+
   const handleSubmit = () => {
     const answer = exercise.type === "mcq" ? selectedAnswer : inputAnswer
     if (answer.trim()) {
@@ -30,7 +39,7 @@ export function ExerciseComponent({ exercise, onAnswerSubmit, feedback, userAnsw
     if (exercise.type === "listening" && exercise.audioUrl) {
       // In a real app, you would play the audio file
       // For demo purposes, we'll use text-to-speech
-      speakText(exercise.correctAnswer)
+      speakText(correctAnswer)
     }
   }
 
@@ -69,10 +78,10 @@ export function ExerciseComponent({ exercise, onAnswerSubmit, feedback, userAnsw
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{option}</span>
-                    {isAnswered && option === exercise.correctAnswer && (
+                    {isAnswered && option === correctAnswer && (
                       <CheckCircle className="h-5 w-5 text-green-600" />
                     )}
-                    {isAnswered && option === userAnswer && option !== exercise.correctAnswer && (
+                    {isAnswered && option === userAnswer && option !== correctAnswer && (
                       <XCircle className="h-5 w-5 text-red-600" />
                     )}
                   </div>
@@ -124,7 +133,7 @@ export function ExerciseComponent({ exercise, onAnswerSubmit, feedback, userAnsw
                   </p>
                   {!feedback.correct && (
                     <p className="text-sm text-gray-600">
-                      The correct answer is: <span className="font-medium">{exercise.correctAnswer}</span>
+                      The correct answer is: <span className="font-medium">{correctAnswer}</span>
                     </p>
                   )}
                 </div>

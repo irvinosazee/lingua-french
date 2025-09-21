@@ -116,11 +116,81 @@ export async function markLessonCompleted(lessonId: number, xpEarned = 10): Prom
 
 // Text-to-speech for pronunciation
 export function speakText(text: string, lang = "fr-FR") {
-  if ("speechSynthesis" in window) {
+  if (!text || text.trim() === "") {
+    console.warn("No text provided to speak")
+    return
+  }
+
+  if (!("speechSynthesis" in window)) {
+    console.error("Speech synthesis not supported in this browser")
+    alert("Speech synthesis is not supported in your browser. Please try using Chrome, Firefox, or Safari.")
+    return
+  }
+
+  try {
+    // Cancel any ongoing speech
+    speechSynthesis.cancel()
+
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = lang
     utterance.rate = 0.8
-    speechSynthesis.speak(utterance)
+    utterance.volume = 1.0
+
+    // Try to get and use a French voice
+    const voices = speechSynthesis.getVoices()
+    console.log("Available voices:", voices.length)
+
+    if (voices.length > 0) {
+      // Look for French voices in order of preference
+      const frenchVoice = voices.find(voice =>
+        voice.lang === 'fr-FR' ||
+        voice.lang === 'fr-CA' ||
+        voice.lang.startsWith('fr')
+      )
+
+      if (frenchVoice) {
+        utterance.voice = frenchVoice
+        console.log("Using French voice:", frenchVoice.name, frenchVoice.lang)
+      } else {
+        // Try to use default voice
+        const defaultVoice = voices.find(voice => voice.default)
+        if (defaultVoice) {
+          utterance.voice = defaultVoice
+          console.log("Using default voice:", defaultVoice.name, defaultVoice.lang)
+        }
+      }
+    }
+
+    // Add event listeners for debugging
+    utterance.onstart = () => {
+      console.log("Speech started:", text.substring(0, 50) + "...")
+    }
+
+    utterance.onend = () => {
+      console.log("Speech ended:", text.substring(0, 50) + "...")
+    }
+
+    utterance.onerror = (event) => {
+      console.error("Speech error:", event.error)
+      if (event.error === 'not-allowed') {
+        alert("Speech synthesis blocked. Please allow audio in your browser settings.")
+      }
+    }
+
+    // Wait for voices to load before speaking
+    const speak = () => {
+      console.log("Attempting to speak with voice:", utterance.voice?.name || 'default')
+      speechSynthesis.speak(utterance)
+    }
+
+    if (speechSynthesis.getVoices().length > 0) {
+      speak()
+    } else {
+      speechSynthesis.addEventListener('voiceschanged', speak, { once: true })
+    }
+
+  } catch (error) {
+    console.error("Error in speakText function:", error)
   }
 }
 

@@ -69,35 +69,40 @@ A modern, interactive French language learning application built with Next.js 14
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
-- npm or yarn package manager
+- **Node.js 18+** 
+- **pnpm** package manager (recommended - project uses pnpm-lock.yaml)
 
 ### Installation
 
 1. **Clone and install dependencies**
    \`\`\`bash
    git clone <repository-url>
-   cd lingua-french-app
-   npm install
+   cd lingua
+   pnpm install
    \`\`\`
 
-2. **Set up environment variables**
+2. **Environment setup**
    
-   Create a `.env.local` file or set in your deployment platform:
+   The `.env` file is already configured with:
    \`\`\`env
-   DATABASE_URL=file:./prisma/dev.db
-   NODE_ENV=development
+   DATABASE_URL="file:./dev.db"
    \`\`\`
 
-3. **Initialize the database**
+3. **Database setup and migration**
+   \`\`\`bash
+   # Generate Prisma client
+   pnpm prisma generate
    
-   The app includes setup scripts that can be run to configure the database:
-   - `scripts/setup-database.ts` - Sets up Prisma and creates tables
-   - `scripts/init-database.ts` - Seeds sample lesson data
+   # Apply database migrations (creates SQLite database)
+   pnpm prisma migrate dev
+   
+   # Seed database with French lesson data
+   pnpm prisma db seed
+   \`\`\`
 
 4. **Start the development server**
    \`\`\`bash
-   npm run dev
+   pnpm dev
    \`\`\`
 
 5. **Open your browser**
@@ -109,31 +114,41 @@ A modern, interactive French language learning application built with Next.js 14
 The app uses two main models:
 
 **Lesson Model**
-- `id` - Unique identifier
-- `slug` - URL-friendly lesson identifier  
+- `id` - Auto-incrementing unique identifier
+- `slug` - URL-friendly lesson identifier (unique)
 - `title` - Lesson display name
-- `description` - Lesson overview
-- `vocabulary` - JSON array of French words with translations
+- `description` - Lesson overview (optional)
+- `vocab` - JSON array of French vocabulary with translations and pronunciation
 - `exercises` - JSON array of interactive exercises
+- `createdAt` - Timestamp when lesson was created
 
 **Progress Model**  
-- `id` - Unique identifier
-- `lessonId` - Foreign key to lesson
-- `completed` - Completion status
-- `xpEarned` - Experience points awarded
-- `completedAt` - Completion timestamp
+- `id` - Auto-incrementing unique identifier
+- `lessonId` - Foreign key reference to lesson
+- `completed` - Boolean completion status (default: false)
+- `xpEarned` - Experience points awarded (default: 0)
+- `completedAt` - Timestamp when lesson was completed (optional)
 
 ### Database Commands
 \`\`\`bash
 # Generate Prisma client
-npx prisma generate
+pnpm prisma generate
 
-# Push schema to database
-npx prisma db push
+# Apply migrations to database
+pnpm prisma migrate dev
+
+# Reset database and reapply migrations
+pnpm prisma migrate reset
+
+# Seed database with lesson data
+pnpm prisma db seed
 
 # View database in Prisma Studio
-npx prisma studio
+pnpm prisma studio
 \`\`\`
+
+### Database Location
+The SQLite database file is located at `prisma/dev.db` and is created automatically when you run migrations.
 
 ## 🎯 API Endpoints
 
@@ -147,15 +162,14 @@ npx prisma studio
 
 ### Response Format
 \`\`\`typescript
-// Lesson Response
+// Lesson Response (from your data/lessons.json structure)
 {
-  id: string
   slug: string
   title: string
   description: string
-  vocabulary: Array<{
-    french: string
-    english: string
+  vocab: Array<{
+    fr: string
+    en: string
     pronunciation: string
   }>
   exercises: Array<{
@@ -173,12 +187,50 @@ npx prisma studio
   totalXP: number
   currentStreak: number
   lessonsProgress: Array<{
-    lessonId: string
+    lessonId: number
     completed: boolean
     xpEarned: number
   }>
 }
 \`\`\`
+
+## 🎯 Complete Setup Commands (Copy & Paste)
+
+For your `csh` shell, run these commands in order:
+
+\`\`\`csh
+# Navigate to project directory
+cd "/Users/mac/Documents/Web Dev/mini projects/lingua"
+
+# Install all dependencies
+pnpm install
+
+# Generate Prisma client
+pnpm prisma generate
+
+# Apply database migrations (creates SQLite DB)
+pnpm prisma migrate dev
+
+# Seed database with French lesson data
+pnpm prisma db seed
+
+# Start development server
+pnpm dev
+\`\`\`
+
+## 🧪 Testing Your Setup
+
+After running the setup commands:
+
+1. **Visit** `http://localhost:3000` - should show the main app
+2. **Check lessons** at `http://localhost:3000/lessons` - should display French lessons  
+3. **Individual lesson** at `http://localhost:3000/lessons/[id]` - should show lesson content
+4. **Exercises** at `http://localhost:3000/lessons/[id]/exercises` - should show interactive exercises
+5. **Database verification**: 
+   \`\`\`csh
+   pnpm prisma studio
+   \`\`\`
+   Opens database browser at `http://localhost:5555`
 
 ## 🎨 Design System
 
@@ -243,42 +295,76 @@ The app gracefully handles database connection issues by falling back to static 
 
 ### Environment Variables for Production
 \`\`\`env
-DATABASE_URL=file:./prisma/prod.db
+DATABASE_URL="file:./dev.db"
 NODE_ENV=production
 \`\`\`
 
 ### Build Commands
 \`\`\`bash
 # Build for production
-npm run build
+pnpm build
 
-# Start production server
-npm start
+# Start production server  
+pnpm start
+
+# Run production with specific port
+pnpm start -- -p 3000
 \`\`\`
 
 ## 🔧 Troubleshooting
 
 ### Common Issues
 
-**Database Connection Errors**
-- Verify `DATABASE_URL` environment variable is set
-- Run database setup scripts
-- Check file permissions for SQLite database
+**pnpm not installed**
+\`\`\`csh
+# Install pnpm globally
+npm install -g pnpm
+\`\`\`
 
-**API 500 Errors**  
-- The app will fallback to mock data automatically
-- Check browser console for detailed error messages
-- Verify Prisma client is generated
+**Dependency conflicts**
+\`\`\`csh
+# Delete node_modules and reinstall
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
+\`\`\`
 
-**Styling Issues**
-- Ensure Tailwind CSS is properly configured
-- Check for conflicting CSS classes
-- Verify design tokens in `globals.css`
+**Database issues**
+\`\`\`csh
+# Reset and recreate database
+rm prisma/dev.db
+pnpm prisma migrate dev
+pnpm prisma db seed
+\`\`\`
 
-### Debug Mode
-Add console.log statements with `[v0]` prefix for debugging:
-\`\`\`typescript
-console.log("[v0] User progress:", progressData)
+**Port conflicts**
+\`\`\`csh
+# Use different port  
+pnpm dev -- -p 3001
+\`\`\`
+
+**Prisma Client not generated**
+\`\`\`csh
+# Regenerate Prisma client
+pnpm prisma generate
+\`\`\`
+
+**Migration errors**
+\`\`\`csh
+# Reset migrations and start fresh
+pnpm prisma migrate reset
+pnpm prisma migrate dev
+\`\`\`
+
+### Verification Commands
+\`\`\`csh
+# Check if database exists and has data
+pnpm prisma studio
+
+# View current migrations status
+pnpm prisma migrate status
+
+# Check lesson data was seeded
+ls -la prisma/dev.db
 \`\`\`
 
 ## 🤝 Contributing
