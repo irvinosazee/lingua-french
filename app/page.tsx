@@ -118,7 +118,7 @@ export default function Dashboard() {
         </div>
 
         {/* Audio Test Component - Remove this after testing */}
-        <AudioTest />
+        {/* <AudioTest /> */}
       </div>
     </div>
   )
