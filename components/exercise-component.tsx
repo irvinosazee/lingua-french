@@ -36,10 +36,19 @@ export function ExerciseComponent({ exercise, onAnswerSubmit, feedback, userAnsw
   }
 
   const handlePlayAudio = () => {
-    if (exercise.type === "listening" && exercise.audioUrl) {
-      // In a real app, you would play the audio file
-      // For demo purposes, we'll use text-to-speech
-      speakText(correctAnswer)
+    if (exercise.type === "listening") {
+      // Support both audioUrl and audio (text)
+      if (exercise.audioUrl) {
+        // If you have a real audio file, you could play it here
+        // For now, fallback to text-to-speech using correctAnswer
+        speakText(correctAnswer)
+      } else if ((exercise as any).audio) {
+        // Use the audio text for TTS
+        speakText((exercise as any).audio)
+      } else {
+        // Fallback to correctAnswer
+        speakText(correctAnswer)
+      }
     }
   }
 
